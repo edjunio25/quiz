@@ -132,3 +132,33 @@ def test_set_new_sequential_choice_ids_for_new_question():
     question2.add_choice('c', False)
     assert question1.choices[0].id == 1
     assert question2.choices[0].id == 1
+
+#######################################################################
+#Commit 3
+#Vou fazer testes semelhantes aos anteriores, porem usando o fixture para evitar a repetição das definições
+@pytest.fixture
+def question1_with_choices():
+    question1 = Question(title='Example Question', max_selections=3)
+    question1.add_choice('Option A', False)
+    question1.add_choice('Option B', True)
+    question1.add_choice('Option C', False)
+    return question1
+
+@pytest.fixture
+def question2_with_choices():
+    question2 = Question(title='Example Question', max_selections=3)
+    question2.add_choice('Option A', True)
+    question2.add_choice('Option B', False)
+    question2.add_choice('Option C', True)
+    return question2
+
+def test_removing_choices_from_one_question_does_not_affect_the_other(question1_with_choices, question2_with_choices):
+    question1_with_choices.remove_all_choices()
+    assert len(question1_with_choices.choices) == 0
+    assert len(question2_with_choices.choices) == 3
+
+def test_select_choices_returns_all_ids_after_setting_all_correct(question1_with_choices):
+    all_ids = [choice.id for choice in question1_with_choices.choices]
+    question1_with_choices.set_correct_choices(all_ids)
+    selected = question1_with_choices.select_choices(all_ids)
+    assert selected == all_ids
